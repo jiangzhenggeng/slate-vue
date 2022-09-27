@@ -4,9 +4,22 @@ const SlateVueShared = require('../../packages/slate-vue-shared/package.json')
 
 const babelOptions = {
   presets: [
-    ["@vue/babel-preset-jsx", {
-        "injectH": false
-    }]],
+    [
+      '@vue/babel-preset-jsx', {
+      'injectH': false
+    }
+    ]
+  ]
+}
+
+let umd = rollupConfigure(SlateVue, {}, {
+  babel: babelOptions
+})
+
+umd.output = {
+  format: 'umd',
+  name: 'slate-vue',
+  file: 'packages/slate-vue/dist/index.umd.js'
 }
 
 export default [
@@ -24,6 +37,7 @@ export default [
   }, {
     babel: babelOptions
   }),
+  // umd,
   rollupConfigure(SlateVueShared, {
     target: 'es',
     useTypescript: true

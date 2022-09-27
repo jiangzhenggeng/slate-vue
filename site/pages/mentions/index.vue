@@ -142,6 +142,7 @@ export default {
       tips: '',
       search: '',
       index: 0,
+      trigger: '@',
       renderElement,
       CHARACTERS,
       initialValue
@@ -192,43 +193,37 @@ export default {
     },
     async onChange () {
       let editor = this.$editor
-      let { selection } = editor
+      const { selection, operations } = editor
+      if (
+        operations[0].type === 'insert_text' &&
+        operations[0].text === this.trigger
+      ) {
+        this.target = {
+          anchor: Editor.before(editor, selection.anchor),
+          focus: selection.focus
+        }
+        this.search = ''
+        this.index = 0
+        return
+      }
 
-      if (selection && Range.isCollapsed(selection)) {
-        let [start] = Range.edges(selection)
-        let wordBefore = Editor.before(editor, start, { unit: 'word' })
-        let before = wordBefore && Editor.before(editor, wordBefore)
-        let beforeRange = before && Editor.range(editor, before, start)
-        let beforeText = beforeRange && Editor.string(editor, beforeRange)
-        let beforeMatch = beforeText && beforeText.match(/^@(\w+)$/)
-        let after = Editor.after(editor, start)
-        let afterRange = Editor.range(editor, start, after)
-        let afterText = Editor.string(editor, afterRange)
-        let afterMatch = afterText.match(/^(\s|$)/)
-
-        if (beforeMatch && afterMatch) {
-          this.target = beforeRange
-          this.search = beforeMatch[1]
+      if (selection && Range.isCollapsed(selection) && this.target) {
+        const beforeRange = Editor.range(editor, this.target.anchor, selection.focus)
+        const beforeText = Editor.string(editor, beforeRange)
+        const beforeMatch = beforeText && beforeText.match(/^@(\w*)$/)
+        if (beforeMatch) {
+          this.search = beforeText.slice(1)
           this.index = 0
           return
-        } else {
-          let wordBefore = Editor.before(editor, start, { unit: 'offset' })
-          let before = wordBefore && Editor.before(editor, wordBefore)
-          let beforeRange = before && Editor.range(editor, before, start)
-          let beforeText = beforeRange && Editor.string(editor, beforeRange)
-          if (/^.?@$/.test(beforeText)) {
-            this.target = beforeRange
-            this.search = ''
-            this.index = 0
-            return
-          }
         }
       }
 
-      await new Promise((resolve) => {
-        setTimeout(resolve, 220)
-      })
-      this.target = null
+      if (this.target) {
+        await new Promise((resolve) => {
+          setTimeout(resolve, 220)
+        })
+        this.target = null
+      }
 
       let validator = []
       let strs = []
@@ -273,7 +268,7 @@ export default {
       insertMention(this.$editor, item)
 
       for (const [node, path] of Editor.nodes(this.$editor)) {
-        console.log(node, path)
+        // console.log(node, path)
       }
     }
   },
