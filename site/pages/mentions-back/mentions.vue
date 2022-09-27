@@ -1,22 +1,22 @@
 <template>
     <span
-      contentEditable="false"
+      contentEditable='false'
       class="mentions"
       :style="{ boxShadow: selected && focused ? '0 0 0 2px #B4D5FF' : 'none'}"
-    >@{{ element.label }}<slot></slot>
+    >@{{element.character}}<slot></slot>
     </span>
 </template>
 
 <script>
-import { FocusedMixin, SelectedMixin } from 'slate-vue'
+  import { FocusedMixin, SelectedMixin } from 'slate-vue';
 
-export default {
-  name: 'mentions',
-  mixins: [SelectedMixin, FocusedMixin],
-  props: {
-    element: Object
-  }
-}
+  export default {
+    name: 'mentions',
+    mixins: [SelectedMixin, FocusedMixin],
+    props: {
+      element: Object
+    }
+  };
 </script>
 
 <style scoped lang="less">

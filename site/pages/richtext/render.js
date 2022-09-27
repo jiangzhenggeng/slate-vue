@@ -1,4 +1,6 @@
-export const renderLeaf = ({ attributes, children, leaf }) => {
+export const renderLeaf = ({ attributes, children, leaf, ...args }) => {
+  console.log(attributes, children, leaf)
+  console.log(args)
   return {
     render() {
       if (leaf.bold) {
@@ -15,6 +17,11 @@ export const renderLeaf = ({ attributes, children, leaf }) => {
 
       if (leaf.underline) {
         children = <u>{children}</u>
+      }
+
+
+      if (leaf['cs-code']) {
+        children = <cs-code>{children}</cs-code>
       }
 
       return <span {...{attrs: attributes}}>{children}</span>

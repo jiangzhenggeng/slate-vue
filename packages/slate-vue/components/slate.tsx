@@ -3,10 +3,10 @@
  * is a mutable singleton so it won't ever register as "changed" otherwise.
  */
 import * as tsx from 'vue-tsx-support'
-import {EDITOR_TO_ON_CHANGE} from 'slate-vue-shared';
+import { EDITOR_TO_ON_CHANGE } from 'slate-vue-shared';
 import Vue from 'vue';
 import { VueEditor, getGvm } from '../plugins';
-import {fragment} from './fragment'
+import { fragment } from './fragment'
 
 interface SlateData {
   name: string | null
@@ -15,12 +15,12 @@ interface SlateData {
 export const Slate = tsx.component({
   name: 'slate',
   props: {
-    value: String,
+    value: String
   },
   components: {
     fragment
   },
-  data():SlateData {
+  data(): SlateData {
     return {
       name: null
     }
@@ -34,15 +34,15 @@ export const Slate = tsx.component({
       this.renderSlate(JSON.stringify([
         {
           children: [
-            { text: '' },
-          ],
-        },
+            { text: '' }
+          ]
+        }
       ]))
     }
   },
   watch: {
     value(newVal, oldVal) {
-      if(newVal!==oldVal) {
+      if (newVal !== oldVal) {
         this.renderSlate(newVal)
       }
     }
@@ -60,7 +60,7 @@ export const Slate = tsx.component({
       const editor = this.$editor
       editor.children = JSON.parse(value);
       const $$data = JSON.parse(value);
-      editor._state= Vue.observable($$data)
+      editor._state = Vue.observable($$data)
 
       this.clearEditor();
       this.name = this.genUid()
@@ -70,7 +70,7 @@ export const Slate = tsx.component({
     }
   },
   render() {
-    EDITOR_TO_ON_CHANGE.set(this.$editor,()=>{
+    EDITOR_TO_ON_CHANGE.set(this.$editor, () => {
       // patch to update all use
       // update editable manual
       // notify all update
@@ -79,15 +79,15 @@ export const Slate = tsx.component({
       const gvm = getGvm(this.$editor)
       gvm.focused = VueEditor.isFocused(this.$editor)
       let op = this.$editor._operation
-      if(op && op.type === 'set_selection') {
+      if (op && op.type === 'set_selection') {
         gvm.updateSelected()
       }
       // emit onchange event
-      this.$emit('onChange')
+      this.$emit('onChange', this.$editor._state)
     })
     return (
-      <fragment name={this.name}>
-        {this.$scopedSlots.default && this.$scopedSlots.default({})}
+      <fragment name={ this.name }>
+        { this.$scopedSlots.default && this.$scopedSlots.default({}) }
       </fragment>
     )
   }
