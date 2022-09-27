@@ -4,6 +4,7 @@ node_modules/
 #/dist
 #/packages/*/dist
 .cache
+.env
 
 # Log files
 npm-debug.log*
